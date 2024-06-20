@@ -1,2 +1,10 @@
-
-  
+{
+  "users": [
+    {
+      "id": 1718925867875,
+      "name": "Candice Thomason",
+      "email": "candice.thomason@gmail.com",
+      "password": "Berwick44"
+    }
+  ]
+}
