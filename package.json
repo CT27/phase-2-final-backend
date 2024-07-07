@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "json-server": "^0.16.3"
+    "json-server": "^0.16.3",
+    "nodemailer": "^6.9.14"
   },
   "devDependencies": {
     "nodemon": "1.18.4"
