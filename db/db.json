@@ -23,11 +23,7 @@
       "email": "Frank@pop.com",
       "password": "Test123",
       "id": 1718934599000
-    },
-    {
-      "name": "Mike Curry",
-      "email": "Mike.curry@test.com",
-      "password": "teST123",
-      "id": 1718934599001
-    } ]
+    }
+  
+  ]
 }
