@@ -4,7 +4,32 @@
       "id": 1718925867875,
       "name": "Candice Thomason",
       "email": "candice.thomason@gmail.com",
-      "password": "Berwick44"
+      "password": "Test123"
+    },
+    {
+      "id": 1718933968257,
+      "name": "Jane Fisher",
+      "email": "Jfish@gmail.com",
+      "password": "Test123"
+    },
+    {
+      "id": 1718934598999,
+      "name": "Peter Pan",
+      "email": "pete@gmail.com",
+      "password": "Test123"
+    },
+    {
+      "name": "Frank Pop",
+      "email": "Frank@pop.com",
+      "password": "Test123",
+      "id": 1718934599000
+    },
+    {
+      "name": "mike curry",
+      "email": "Mike.curry@test.com",
+      "password": "teST123",
+      "id": 1718934599001
     }
+    
   ]
 }
