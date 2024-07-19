@@ -122,7 +122,7 @@ function sendResetPasswordEmail(email, token) {
     from: "your.email@gmail.com",
     to: email,
     subject: "Password Reset Request",
-    text: `Click the following link to reset your password: http://localhost:3000/reset-password?token=${token}`,
+    text: `Click the following link to reset your password: http://localhost:/reset-password?token=${token}`,
   };
 
   // Send email
