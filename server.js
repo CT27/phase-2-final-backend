@@ -139,28 +139,6 @@ function sendResetPasswordEmail(email, token) {
 function generateRandomToken() {
   return Math.random().toString(36).substr(2, 10); // Generate a 10-character random string
 }
-// Endpoint to handle payment details
-app.post("/api/payment-details", (req, res) => {
-  const { userId, bankName, accountNumber, bsbCode } = req.body;
-
-  if (!userId || !bankName || !accountNumber || !bsbCode) {
-    return res.status(400).json({ message: "All fields are required." });
-  }
-
-  // Read the existing payment details from the file
-  const paymentDetailsPath = path.join(__dirname, "db", "payment-details.json");
-  let paymentDetails = [];
-  if (fs.existsSync(paymentDetailsPath)) {
-    paymentDetails = JSON.parse(fs.readFileSync(paymentDetailsPath, "utf8"));
-  }
-
-  // Save new payment details
-  const newPaymentDetail = { userId, bankName, accountNumber, bsbCode };
-  paymentDetails.push(newPaymentDetail);
-  fs.writeFileSync(paymentDetailsPath, JSON.stringify(paymentDetails, null, 2));
-
-  res.status(200).json({ message: "Payment details saved successfully." });
-});
 
 // Start JSON Server
 jsonServerApp.listen(PORT, () => {
