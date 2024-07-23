@@ -4,7 +4,10 @@
       "id": 1718925867875,
       "name": "Candice Thomason",
       "email": "candice.thomason@gmail.com",
-      "password": "Test123"
+      "password": "Test123",
+      "bankName": "Candy Bank",
+      "accountNumber": "5555555555",
+      "bsbCode": "777777"
     },
     {
       "id": 1718933968257,
@@ -26,6 +29,20 @@
       "email": "Frank@pop.com",
       "password": "Test123",
       "id": 1718934599000
+    },
+    {
+      "id": 1721719477217,
+      "name": "Tod",
+      "email": "Tod@gmail.com",
+      "password": "Test123",
+      "profilePicture": "path/to/default/profile/photo.jpg"
+    },
+    {
+      "id": 1721720155394,
+      "name": "Jo",
+      "email": "jo@gmail.com",
+      "password": "Test123",
+      "profilePicture": "path/to/default/profile/photo.jpg"
     }
   ]
 }

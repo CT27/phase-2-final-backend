@@ -27,6 +27,41 @@ jsonServerApp.use(middlewares);
 // JSON Server routes
 jsonServerApp.use("/api", jsonRouter);
 
+// Custom signup endpoint
+app.post("/api/signup", (req, res) => {
+  const { name, email, password } = req.body;
+  const dbPath = path.join(__dirname, "db", "db.json");
+  console.log("Signup request received for:", email);
+
+  try {
+    const db = JSON.parse(fs.readFileSync(dbPath));
+    console.log("Current users in db:", db.users);
+
+    const userExists = db.users.find((u) => u.email === email);
+    console.log("User exists:", userExists);
+
+    if (userExists) {
+      console.log("User already exists");
+      res.status(400).json({ message: "User already exists" });
+    } else {
+      const newUser = {
+        id: Date.now(),
+        name,
+        email,
+        password,
+        profilePicture: "path/to/default/profile/photo.jpg",
+      };
+      db.users.push(newUser);
+      console.log("New user added:", newUser);
+      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+      res.json({ message: "Signup successful", user: newUser });
+    }
+  } catch (error) {
+    console.error("Error reading or writing db.json:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Custom login endpoint
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
@@ -52,171 +87,11 @@ app.post("/api/login", (req, res) => {
   }
 });
 
-// Custom signup endpoint
-app.post("/api/signup", (req, res) => {
-  const { name, email, password } = req.body;
-  const dbPath = path.join(__dirname, "db", "db.json");
-  console.log("Signup request received for:", email);
-
-  try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
-    const userExists = db.users.find((u) => u.email === email);
-
-    if (userExists) {
-      console.log("User already exists");
-      res.status(400).json({ message: "User already exists" });
-    } else {
-      const newUser = {
-        id: Date.now(),
-        name,
-        email,
-        password,
-        profilePicture: "path/to/default/profile/photo.jpg",
-      };
-      db.users.push(newUser);
-      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-      console.log("Signup successful for user:", newUser);
-      res.json({ message: "Signup successful", user: newUser });
-    }
-  } catch (error) {
-    console.error("Error reading or writing db.json:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Update user endpoint
-app.put("/api/users/:id", (req, res) => {
-  const userId = parseInt(req.params.id);
-  const updatedUserDetails = req.body;
-  const dbPath = path.join(__dirname, "db", "db.json");
-  console.log("Update request received for user ID:", userId);
-
-  try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
-    const userIndex = db.users.findIndex((u) => u.id === userId);
-
-    if (userIndex !== -1) {
-      db.users[userIndex] = { ...db.users[userIndex], ...updatedUserDetails };
-      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-      console.log("User details updated successfully:", db.users[userIndex]);
-      res.json({
-        message: "User details updated successfully",
-        user: db.users[userIndex],
-      });
-    } else {
-      console.log("User not found");
-      res.status(404).json({ message: "User not found" });
-    }
-  } catch (error) {
-    console.error("Error reading or writing db.json:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Endpoint to handle forgot password request
-app.post("/forgot-password", (req, res) => {
-  const { email } = req.body;
-  const dbPath = path.join(__dirname, "db", "db.json");
-  console.log("Forgot password request received for:", email);
-
-  try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
-    const user = db.users.find((user) => user.email === email);
-
-    if (!user) {
-      console.log("User not found");
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Generate reset token
-    const resetToken = generateRandomToken();
-    user.resetToken = resetToken;
-
-    // Update user data in db.json
-    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-
-    // Send reset password email
-    sendResetPasswordEmail(user.email, resetToken);
-
-    console.log("Password reset email sent to:", email);
-    res.json({ message: "Password reset email sent successfully" });
-  } catch (error) {
-    console.error("Error reading or writing db.json:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Endpoint to handle reset password
-app.post("/reset-password", (req, res) => {
-  const { email, token, newPassword } = req.body;
-  const dbPath = path.join(__dirname, "db", "db.json");
-  console.log("Reset password request received for:", email);
-
-  try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
-    const user = db.users.find((user) => user.email === email);
-
-    if (!user || user.resetToken !== token) {
-      console.log("Invalid or expired token");
-      return res.status(400).json({ message: "Invalid or expired token" });
-    }
-
-    // Update user's password
-    user.password = newPassword;
-    delete user.resetToken; // Remove reset token after password is reset
-
-    // Update user data in db.json
-    fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-
-    console.log("Password reset successfully for user:", email);
-    res.json({ message: "Password reset successfully" });
-  } catch (error) {
-    console.error("Error reading or writing db.json:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Helper function to send reset password email
-function sendResetPasswordEmail(email, token) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "your.email@gmail.com",
-      pass: "your_password",
-    },
-  });
-
-  const mailOptions = {
-    from: "your.email@gmail.com",
-    to: email,
-    subject: "Password Reset Request",
-    text: `Click the following link to reset your password: http://localhost:${PORT_EXPRESS_SERVER}/reset-password?token=${token}`,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error("Error sending email:", error);
-    } else {
-      console.log("Email sent:", info.response);
-    }
-  });
-}
-
-// Function to generate random token
-function generateRandomToken() {
-  return Math.random().toString(36).substr(2, 10);
-}
-
-// JSON Server
-jsonServerApp.use(middlewares);
-jsonServerApp.use("/api", jsonRouter);
-
 // Start JSON Server
-// jsonServerApp.listen(PORT_JSON_SERVER, () => {
-//   console.log(`JSON Server is running on http://localhost:${PORT_JSON_SERVER}`);
-// });
+jsonServerApp.listen(PORT_JSON_SERVER, () => {
+  console.log(`JSON Server is running on http://localhost:${PORT_JSON_SERVER}`);
+});
 
-// Custom Express routes (on a different port or different path)
 // Start Express app
 app.listen(PORT_EXPRESS_SERVER, () => {
   console.log(
