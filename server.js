@@ -84,6 +84,35 @@ app.post("/api/signup", (req, res) => {
   }
 });
 
+// Update user endpoint
+app.put("/api/users/:id", (req, res) => {
+  const userId = parseInt(req.params.id);
+  const updatedUserDetails = req.body;
+  const dbPath = path.join(__dirname, "db", "db.json");
+  console.log("Update request received for user ID:", userId);
+
+  try {
+    const db = JSON.parse(fs.readFileSync(dbPath));
+    const userIndex = db.users.findIndex((u) => u.id === userId);
+
+    if (userIndex !== -1) {
+      db.users[userIndex] = { ...db.users[userIndex], ...updatedUserDetails };
+      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+      console.log("User details updated successfully:", db.users[userIndex]);
+      res.json({
+        message: "User details updated successfully",
+        user: db.users[userIndex],
+      });
+    } else {
+      console.log("User not found");
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error reading or writing db.json:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Endpoint to handle forgot password request
 app.post("/forgot-password", (req, res) => {
   const { email } = req.body;
@@ -183,9 +212,9 @@ jsonServerApp.use(middlewares);
 jsonServerApp.use("/api", jsonRouter);
 
 // Start JSON Server
-jsonServerApp.listen(PORT_JSON_SERVER, () => {
-  console.log(`JSON Server is running on http://localhost:${PORT_JSON_SERVER}`);
-});
+// jsonServerApp.listen(PORT_JSON_SERVER, () => {
+//   console.log(`JSON Server is running on http://localhost:${PORT_JSON_SERVER}`);
+// });
 
 // Custom Express routes (on a different port or different path)
 // Start Express app

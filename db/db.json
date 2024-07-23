@@ -16,7 +16,10 @@
       "id": 1718934598999,
       "name": "Peter Pan",
       "email": "pete@gmail.com",
-      "password": "Test123"
+      "password": "Test123",
+      "bankName": "Test Bank",
+      "accountNumber": "1234567",
+      "bsbCode": "345678"
     },
     {
       "name": "Frank Pop",
@@ -24,6 +27,5 @@
       "password": "Test123",
       "id": 1718934599000
     }
-  
   ]
 }
