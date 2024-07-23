@@ -10,7 +10,8 @@ const jsonServerApp = jsonServer.create();
 const jsonRouter = jsonServer.router(path.join(__dirname, "db", "db.json"));
 const middlewares = jsonServer.defaults();
 
-const PORT = process.env.PORT || 3000;
+const PORT_JSON_SERVER = process.env.PORT_JSON_SERVER || 3000;
+const PORT_EXPRESS_SERVER = process.env.PORT_EXPRESS_SERVER || 3001;
 
 // Middleware
 app.use(bodyParser.json());
@@ -122,7 +123,7 @@ function sendResetPasswordEmail(email, token) {
     from: "your.email@gmail.com",
     to: email,
     subject: "Password Reset Request",
-    text: `Click the following link to reset your password: http://localhost:/reset-password?token=${token}`,
+    text: `Click the following link to reset your password: http://localhost:${PORT_EXPRESS_SERVER}/reset-password?token=${token}`,
   };
 
   // Send email
@@ -141,11 +142,13 @@ function generateRandomToken() {
 }
 
 // Start JSON Server
-jsonServerApp.listen(PORT, () => {
-  console.log(`JSON Server is running on http://localhost:${PORT}`);
+jsonServerApp.listen(PORT_JSON_SERVER, () => {
+  console.log(`JSON Server is running on http://localhost:${PORT_JSON_SERVER}`);
 });
 
 // Start Express app
-app.listen(PORT, () => {
-  console.log(`Express app is running on http://localhost:${PORT}`);
+app.listen(PORT_EXPRESS_SERVER, () => {
+  console.log(
+    `Express app is running on http://localhost:${PORT_EXPRESS_SERVER}`
+  );
 });
