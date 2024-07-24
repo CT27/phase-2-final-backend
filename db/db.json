@@ -43,6 +43,20 @@
       "email": "jo@gmail.com",
       "password": "Test123",
       "profilePicture": "path/to/default/profile/photo.jpg"
+    },
+    {
+      "id": 1721774565922,
+      "name": "rod",
+      "email": "rod@gmail.com",
+      "password": "Test123",
+      "profilePicture": "path/to/default/profile/photo.jpg"
+    },
+    {
+      "id": 1721774764210,
+      "name": "Heath",
+      "email": "heath@outlook.com",
+      "password": "Test123",
+      "profilePicture": "path/to/default/profile/photo.jpg"
     }
   ]
 }
