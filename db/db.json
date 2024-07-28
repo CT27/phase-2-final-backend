@@ -2,12 +2,13 @@
   "users": [
     {
       "id": 1718925867875,
-      "name": "Candice Thomason",
-      "email": "candice.thomason@gmail.com",
+      "name": "Candice Test",
+      "email": "candice.test@gmail.com",
       "password": "Test123",
       "bankName": "Candy Bank",
       "accountNumber": "5555555555",
-      "bsbCode": "777777"
+      "bsbCode": "777777",
+      "profilePicture": "https://images.app.goo.gl/XQDdgmHb5fJbEGsGA"
     },
     {
       "id": 1718933968257,
@@ -45,16 +46,23 @@
       "profilePicture": "path/to/default/profile/photo.jpg"
     },
     {
-      "id": 1721774565922,
-      "name": "rod",
-      "email": "rod@gmail.com",
+      "id": 1722134097669,
+      "name": "ned",
+      "email": "ned@gmail.com",
       "password": "Test123",
       "profilePicture": "path/to/default/profile/photo.jpg"
     },
     {
-      "id": 1721774764210,
-      "name": "Heath",
-      "email": "heath@outlook.com",
+      "id": 1722135123901,
+      "name": "Terry",
+      "email": "terry@outlook.com",
+      "password": "Test123",
+      "profilePicture": "path/to/default/profile/photo.jpg"
+    },
+    {
+      "id": 1722145091561,
+      "name": "Jan",
+      "email": "Jan@email.com",
       "password": "Test123",
       "profilePicture": "path/to/default/profile/photo.jpg"
     }

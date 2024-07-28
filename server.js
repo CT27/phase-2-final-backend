@@ -87,6 +87,33 @@ app.post("/api/login", (req, res) => {
   }
 });
 
+// Custom update user endpoint
+app.patch("/users/:id", (req, res) => {
+  const userId = parseInt(req.params.id);
+  const { name, email } = req.body;
+  const dbPath = path.join(__dirname, "db", "db.json");
+
+  try {
+    const db = JSON.parse(fs.readFileSync(dbPath));
+    const userIndex = db.users.findIndex((u) => u.id === userId);
+
+    if (userIndex !== -1) {
+      db.users[userIndex].name = name || db.users[userIndex].name;
+      db.users[userIndex].email = email || db.users[userIndex].email;
+      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+      res.json({
+        message: "User details updated successfully",
+        user: db.users[userIndex],
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error updating user details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Start JSON Server
 jsonServerApp.listen(PORT_JSON_SERVER, () => {
   console.log(`JSON Server is running on http://localhost:${PORT_JSON_SERVER}`);
