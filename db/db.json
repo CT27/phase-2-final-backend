@@ -65,6 +65,13 @@
       "email": "Jan@email.com",
       "password": "Test123",
       "profilePicture": "path/to/default/profile/photo.jpg"
+    },
+    {
+      "id": 1722206525473,
+      "name": "Henry",
+      "email": "henry@live.com",
+      "password": "tEST123",
+      "profilePicture": "path/to/default/profile/photo.jpg"
     }
   ]
 }
