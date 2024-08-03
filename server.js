@@ -19,7 +19,7 @@ server.use(middlewares);
 
 // Custom signup endpoint
 server.post("/api/signup", (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
   console.log("Signup request received for:", email);
 
@@ -35,11 +35,10 @@ server.post("/api/signup", (req, res) => {
       res.status(400).json({ message: "User already exists" });
     } else {
       const newUser = {
-        id: Date.now().toString(), // Use Date.now() for unique ID
+        id: Date.now(),
         name,
         email,
         password,
-        phone: phone || "", // Include phone number
         profilePicture: "path/to/default/profile/photo.jpg",
       };
       db.users.push(newUser);
@@ -80,20 +79,17 @@ server.post("/api/login", (req, res) => {
 
 // Custom update user endpoint
 server.patch("/api/users/:id", (req, res) => {
-  const userId = req.params.id;
-  const { name, email, phone } = req.body; // Added phone field
+  const userId = parseInt(req.params.id);
+  const { name, email } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
 
   try {
     const db = JSON.parse(fs.readFileSync(dbPath));
-    console.log("Patching user with ID:", userId);
     const userIndex = db.users.findIndex((u) => u.id === userId);
-    console.log("User index found:", userIndex);
 
     if (userIndex !== -1) {
       db.users[userIndex].name = name || db.users[userIndex].name;
       db.users[userIndex].email = email || db.users[userIndex].email;
-      db.users[userIndex].phone = phone || db.users[userIndex].phone; // Update phone
       fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
       res.json({
         message: "User details updated successfully",
