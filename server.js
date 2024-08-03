@@ -20,7 +20,7 @@ server.use(middlewares);
 
 // Custom signup endpoint
 server.post("/api/signup", (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
   console.log("Signup request received for:", email);
 
@@ -40,6 +40,7 @@ server.post("/api/signup", (req, res) => {
         name,
         email,
         password,
+        phone: phone || "", // Include phone number
         profilePicture: "path/to/default/profile/photo.jpg",
       };
       db.users.push(newUser);
