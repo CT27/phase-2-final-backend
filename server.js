@@ -105,6 +105,26 @@ server.patch("/api/users/:id", (req, res) => {
   }
 });
 
+// Custom get user by ID endpoint
+server.get("/api/users/:id", (req, res) => {
+  const userId = req.params.id;
+  const dbPath = path.join(__dirname, "db", "db.json");
+
+  try {
+    const db = JSON.parse(fs.readFileSync(dbPath));
+    const user = db.users.find((u) => u.id === userId);
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error reading db.json:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // Use default JSON Server router
 server.use("/api", router);
 
