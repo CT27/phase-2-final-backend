@@ -72,6 +72,13 @@
       "email": "henry@live.com",
       "password": "tEST123",
       "profilePicture": "path/to/default/profile/photo.jpg"
+    },
+    {
+      "id": 1722551271405,
+      "name": "Ron",
+      "email": "ron@gmail.com",
+      "password": "Test123",
+      "profilePicture": "path/to/default/profile/photo.jpg"
     }
   ]
 }

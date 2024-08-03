@@ -1,34 +1,24 @@
-const express = require("express");
-const bodyParser = require("body-parser");
 const jsonServer = require("json-server");
 const path = require("path");
 const fs = require("fs");
-const nodemailer = require("nodemailer");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 
-const app = express();
-const jsonServerApp = jsonServer.create();
-const jsonRouter = jsonServer.router(path.join(__dirname, "db", "db.json"));
+const server = jsonServer.create();
+const router = jsonServer.router(path.join(__dirname, "db", "db.json"));
 const middlewares = jsonServer.defaults();
 
-const PORT_JSON_SERVER = process.env.PORT_JSON_SERVER || 3000;
-const PORT_EXPRESS_SERVER = process.env.PORT_EXPRESS_SERVER || 3001;
+const PORT = process.env.PORT || 3001;
 
-const cors = require("cors");
-app.use(cors());
+server.use(cors());
+server.use(bodyParser.json());
+server.use(bodyParser.urlencoded({ extended: true }));
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-
-// JSON Server middleware
-jsonServerApp.use(middlewares);
-
-// JSON Server routes
-jsonServerApp.use("/api", jsonRouter);
+// Use default JSON Server middlewares
+server.use(middlewares);
 
 // Custom signup endpoint
-app.post("/api/signup", (req, res) => {
+server.post("/api/signup", (req, res) => {
   const { name, email, password } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
   console.log("Signup request received for:", email);
@@ -63,7 +53,7 @@ app.post("/api/signup", (req, res) => {
 });
 
 // Custom login endpoint
-app.post("/api/login", (req, res) => {
+server.post("/api/login", (req, res) => {
   const { email, password } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
   console.log("Login request received for:", email);
@@ -88,7 +78,7 @@ app.post("/api/login", (req, res) => {
 });
 
 // Custom update user endpoint
-app.patch("/users/:id", (req, res) => {
+server.patch("/users/:id", (req, res) => {
   const userId = parseInt(req.params.id);
   const { name, email } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
@@ -114,14 +104,10 @@ app.patch("/users/:id", (req, res) => {
   }
 });
 
-// Start JSON Server
-jsonServerApp.listen(PORT_JSON_SERVER, () => {
-  console.log(`JSON Server is running on http://localhost:${PORT_JSON_SERVER}`);
-});
+// Use default JSON Server router
+server.use("/api", router);
 
-// Start Express app
-app.listen(PORT_EXPRESS_SERVER, () => {
-  console.log(
-    `Express app is running on http://localhost:${PORT_EXPRESS_SERVER}`
-  );
+// Start the server
+server.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
