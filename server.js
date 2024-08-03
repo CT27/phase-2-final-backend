@@ -35,7 +35,7 @@ server.post("/api/signup", (req, res) => {
       res.status(400).json({ message: "User already exists" });
     } else {
       const newUser = {
-        id: Date.now(),
+        id: Date.now().toString(), // Use Date.now() for unique ID
         name,
         email,
         password,
@@ -79,17 +79,21 @@ server.post("/api/login", (req, res) => {
 
 // Custom update user endpoint
 server.patch("/api/users/:id", (req, res) => {
-  const userId = parseInt(req.params.id);
-  const { name, email } = req.body;
+  const userId = req.params.id;
+  const { name, email, profilePicture } = req.body; // Removed phone field
   const dbPath = path.join(__dirname, "db", "db.json");
 
   try {
     const db = JSON.parse(fs.readFileSync(dbPath));
+    console.log("Patching user with ID:", userId);
     const userIndex = db.users.findIndex((u) => u.id === userId);
+    console.log("User index found:", userIndex);
 
     if (userIndex !== -1) {
       db.users[userIndex].name = name || db.users[userIndex].name;
       db.users[userIndex].email = email || db.users[userIndex].email;
+      db.users[userIndex].profilePicture =
+        profilePicture || db.users[userIndex].profilePicture; // Update profilePicture
       fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
       res.json({
         message: "User details updated successfully",
