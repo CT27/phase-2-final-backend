@@ -5,31 +5,28 @@
       "name": "Candice",
       "email": "candice.test@gmail.com",
       "password": "Test123",
-      "bankName": "Candy Bank",
-      "accountNumber": "5555555555",
-      "bsbCode": "777777",
       "profilePicture": "https://randomuser.me/api/portraits/thumb/men/75.jpg"
     },
     {
       "id": 1718933968257,
       "name": "Jane Fisher",
       "email": "Jfish@gmail.com",
-      "password": "Test123"
+      "password": "Test123",
+      "profilePicture": "https://randomuser.me/api/portraits/thumb/men/75.jpg"
     },
     {
       "id": 1718934598999,
       "name": "Peter Pan",
       "email": "pete@gmail.com",
       "password": "Test123",
-      "bankName": "Test Bank",
-      "accountNumber": "1234567",
-      "bsbCode": "345678"
+      "profilePicture": "https://randomuser.me/api/portraits/thumb/men/75.jpg"
     },
     {
+      "id": 1718934599000,
       "name": "Frank Pop",
       "email": "Frank@pop.com",
       "password": "Test123",
-      "id": 1718934599000
+      "profilePicture": "https://randomuser.me/api/portraits/thumb/men/75.jpg"
     },
     {
       "id": 1721719477217,
