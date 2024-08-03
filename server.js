@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const { v4: uuidv4 } = require("uuid");
 
 const server = jsonServer.create();
 const router = jsonServer.router(path.join(__dirname, "db", "db.json"));
@@ -35,7 +36,7 @@ server.post("/api/signup", (req, res) => {
       res.status(400).json({ message: "User already exists" });
     } else {
       const newUser = {
-        id: Date.now(),
+        id: uuidv4(),
         name,
         email,
         password,
@@ -79,7 +80,7 @@ server.post("/api/login", (req, res) => {
 
 // Custom update user endpoint
 server.patch("/api/users/:id", (req, res) => {
-  const userId = parseInt(req.params.id);
+  const userId = req.params.id;
   const { name, email } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
 
