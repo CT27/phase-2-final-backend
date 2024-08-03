@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { v4: uuidv4 } = require("uuid");
 
 const server = jsonServer.create();
 const router = jsonServer.router(path.join(__dirname, "db", "db.json"));
@@ -36,7 +35,7 @@ server.post("/api/signup", (req, res) => {
       res.status(400).json({ message: "User already exists" });
     } else {
       const newUser = {
-        id: uuidv4(),
+        id: Date.now().toString(), // Use Date.now() for unique ID
         name,
         email,
         password,
@@ -87,7 +86,9 @@ server.patch("/api/users/:id", (req, res) => {
 
   try {
     const db = JSON.parse(fs.readFileSync(dbPath));
+    console.log("Patching user with ID:", userId);
     const userIndex = db.users.findIndex((u) => u.id === userId);
+    console.log("User index found:", userIndex);
 
     if (userIndex !== -1) {
       db.users[userIndex].name = name || db.users[userIndex].name;
