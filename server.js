@@ -84,7 +84,7 @@ server.post("/api/login", (req, res) => {
 
 // Custom update user endpoint
 server.patch("/api/users/:id", (req, res) => {
-  const userId = req.params.id;
+  const userId = req.params.id.toString(); // Ensure userId is treated as a string
   const { name, email, profilePicture } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
 
@@ -92,8 +92,15 @@ server.patch("/api/users/:id", (req, res) => {
     const db = readDb();
     console.log("Patching user with ID:", userId);
 
+    // Log the IDs of all users in the database for debugging
+    db.users.forEach((user, index) => {
+      console.log(
+        `User ${index}: ID=${user.id}, Name=${user.name}, Email=${user.email}`
+      );
+    });
+
     // Verify if IDs are being compared as strings
-    const userIndex = db.users.findIndex((u) => u.id === userId);
+    const userIndex = db.users.findIndex((u) => u.id.toString() === userId);
     console.log("User index found:", userIndex);
     console.log("User ID type in db:", typeof db.users[userIndex]?.id);
     console.log("Provided User ID type:", typeof userId);
