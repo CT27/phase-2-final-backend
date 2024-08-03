@@ -81,7 +81,7 @@ server.post("/api/login", (req, res) => {
 // Custom update user endpoint
 server.patch("/api/users/:id", (req, res) => {
   const userId = req.params.id;
-  const { name, email } = req.body;
+  const { name, email, phone } = req.body; // Added phone field
   const dbPath = path.join(__dirname, "db", "db.json");
 
   try {
@@ -91,6 +91,7 @@ server.patch("/api/users/:id", (req, res) => {
     if (userIndex !== -1) {
       db.users[userIndex].name = name || db.users[userIndex].name;
       db.users[userIndex].email = email || db.users[userIndex].email;
+      db.users[userIndex].phone = phone || db.users[userIndex].phone; // Update phone
       fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
       res.json({
         message: "User details updated successfully",
@@ -101,26 +102,6 @@ server.patch("/api/users/:id", (req, res) => {
     }
   } catch (error) {
     console.error("Error updating user details:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Custom get user by ID endpoint
-server.get("/api/users/:id", (req, res) => {
-  const userId = req.params.id;
-  const dbPath = path.join(__dirname, "db", "db.json");
-
-  try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
-    const user = db.users.find((u) => u.id === userId);
-
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json({ message: "User not found" });
-    }
-  } catch (error) {
-    console.error("Error reading db.json:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
