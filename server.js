@@ -7,15 +7,20 @@ const bodyParser = require("body-parser");
 const server = jsonServer.create();
 const router = jsonServer.router(path.join(__dirname, "db", "db.json"));
 const middlewares = jsonServer.defaults();
-
 const PORT = process.env.PORT || 3001;
 
 server.use(cors());
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: true }));
-
-// Use default JSON Server middlewares
 server.use(middlewares);
+
+const readDb = () =>
+  JSON.parse(fs.readFileSync(path.join(__dirname, "db", "db.json")));
+const writeDb = (db) =>
+  fs.writeFileSync(
+    path.join(__dirname, "db", "db.json"),
+    JSON.stringify(db, null, 2)
+  );
 
 // Custom signup endpoint
 server.post("/api/signup", (req, res) => {
@@ -24,7 +29,7 @@ server.post("/api/signup", (req, res) => {
   console.log("Signup request received for:", email);
 
   try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
+    const db = readDb();
     console.log("Current users in db:", db.users);
 
     const userExists = db.users.find((u) => u.email === email);
@@ -43,7 +48,7 @@ server.post("/api/signup", (req, res) => {
       };
       db.users.push(newUser);
       console.log("New user added:", newUser);
-      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+      writeDb(db);
       res.json({ message: "Signup successful", user: newUser });
     }
   } catch (error) {
@@ -59,7 +64,7 @@ server.post("/api/login", (req, res) => {
   console.log("Login request received for:", email);
 
   try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
+    const db = readDb();
     const user = db.users.find(
       (u) => u.email === email && u.password === password
     );
@@ -80,26 +85,31 @@ server.post("/api/login", (req, res) => {
 // Custom update user endpoint
 server.patch("/api/users/:id", (req, res) => {
   const userId = req.params.id;
-  const { name, email, profilePicture } = req.body; // Removed phone field
+  const { name, email, profilePicture } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
 
   try {
-    const db = JSON.parse(fs.readFileSync(dbPath));
+    const db = readDb();
     console.log("Patching user with ID:", userId);
+
+    // Verify if IDs are being compared as strings
     const userIndex = db.users.findIndex((u) => u.id === userId);
     console.log("User index found:", userIndex);
+    console.log("User ID type in db:", typeof db.users[userIndex]?.id);
+    console.log("Provided User ID type:", typeof userId);
 
     if (userIndex !== -1) {
       db.users[userIndex].name = name || db.users[userIndex].name;
       db.users[userIndex].email = email || db.users[userIndex].email;
       db.users[userIndex].profilePicture =
-        profilePicture || db.users[userIndex].profilePicture; // Update profilePicture
-      fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
+        profilePicture || db.users[userIndex].profilePicture;
+      writeDb(db);
       res.json({
         message: "User details updated successfully",
         user: db.users[userIndex],
       });
     } else {
+      console.log("User not found");
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
