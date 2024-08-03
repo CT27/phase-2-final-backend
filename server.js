@@ -78,7 +78,7 @@ server.post("/api/login", (req, res) => {
 });
 
 // Custom update user endpoint
-server.patch("/users/:id", (req, res) => {
+server.patch("/api/users/:id", (req, res) => {
   const userId = parseInt(req.params.id);
   const { name, email } = req.body;
   const dbPath = path.join(__dirname, "db", "db.json");
