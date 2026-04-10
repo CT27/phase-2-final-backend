@@ -3,6 +3,9 @@ const path = require("path");
 const fs = require("fs");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
+
+const SALT_ROUNDS = 10;
 
 const server = jsonServer.create();
 const router = jsonServer.router(path.join(__dirname, "db", "db.json"));
@@ -22,88 +25,75 @@ const writeDb = (db) =>
     JSON.stringify(db, null, 2)
   );
 
+// Strip password before returning user to client
+const safeUser = (user) => {
+  const { password, ...rest } = user;
+  return rest;
+};
+
 // Custom signup endpoint
-server.post("/api/signup", (req, res) => {
+server.post("/api/signup", async (req, res) => {
   const { name, email, password } = req.body;
-  const dbPath = path.join(__dirname, "db", "db.json");
   console.log("Signup request received for:", email);
 
   try {
     const db = readDb();
-    console.log("Current users in db:", db.users);
 
     const userExists = db.users.find((u) => u.email === email);
-    console.log("User exists:", userExists);
-
     if (userExists) {
-      console.log("User already exists");
-      res.status(400).json({ message: "User already exists" });
-    } else {
-      const newUser = {
-        id: Date.now().toString(), // Use Date.now() for unique ID
-        name,
-        email,
-        password,
-        profilePicture: "path/to/default/profile/photo.jpg",
-      };
-      db.users.push(newUser);
-      console.log("New user added:", newUser);
-      writeDb(db);
-      res.json({ message: "Signup successful", user: newUser });
+      return res.status(400).json({ message: "User already exists" });
     }
+
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    const newUser = {
+      id: Date.now().toString(),
+      name,
+      email,
+      password: hashedPassword,
+      profilePicture: "path/to/default/profile/photo.jpg",
+    };
+    db.users.push(newUser);
+    writeDb(db);
+    res.json({ message: "Signup successful", user: safeUser(newUser) });
   } catch (error) {
-    console.error("Error reading or writing db.json:", error);
+    console.error("Error during signup:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
 // Custom login endpoint
-server.post("/api/login", (req, res) => {
+server.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
-  const dbPath = path.join(__dirname, "db", "db.json");
   console.log("Login request received for:", email);
 
   try {
     const db = readDb();
-    const user = db.users.find(
-      (u) => u.email === email && u.password === password
-    );
+    const user = db.users.find((u) => u.email === email);
 
-    if (user) {
-      console.log("Login successful for user:", user);
-      res.json({ message: "Login successful", user });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (passwordMatch) {
+      res.json({ message: "Login successful", user: safeUser(user) });
     } else {
-      console.log("Invalid email or password");
       res.status(401).json({ message: "Invalid email or password" });
     }
   } catch (error) {
-    console.error("Error reading or parsing db.json:", error);
+    console.error("Error during login:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
 // Custom update user endpoint
 server.patch("/api/users/:id", (req, res) => {
-  const userId = req.params.id.toString(); // Ensure userId is treated as a string
+  const userId = req.params.id.toString();
   const { name, email, profilePicture } = req.body;
-  const dbPath = path.join(__dirname, "db", "db.json");
 
   try {
     const db = readDb();
-    console.log("Patching user with ID:", userId);
-
-    // Log the IDs of all users in the database for debugging
-    db.users.forEach((user, index) => {
-      console.log(
-        `User ${index}: ID=${user.id}, Name=${user.name}, Email=${user.email}`
-      );
-    });
-
-    // Verify if IDs are being compared as strings
     const userIndex = db.users.findIndex((u) => u.id.toString() === userId);
-    console.log("User index found:", userIndex);
-    console.log("User ID type in db:", typeof db.users[userIndex]?.id);
-    console.log("Provided User ID type:", typeof userId);
 
     if (userIndex !== -1) {
       db.users[userIndex].name = name || db.users[userIndex].name;
@@ -113,10 +103,9 @@ server.patch("/api/users/:id", (req, res) => {
       writeDb(db);
       res.json({
         message: "User details updated successfully",
-        user: db.users[userIndex],
+        user: safeUser(db.users[userIndex]),
       });
     } else {
-      console.log("User not found");
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {

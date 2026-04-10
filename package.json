@@ -10,13 +10,14 @@
   },
   "dependencies": {
     "amadeus": "^10.1.0",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "json-server": "^0.16.3",
     "nodemailer": "^6.9.14",
     "uuid": "^10.0.0"
   },
   "devDependencies": {
-    "nodemon": "1.18.4"
+    "nodemon": "^3.1.14"
   },
   "author": "Ian Hollander",
   "license": "ISC"
